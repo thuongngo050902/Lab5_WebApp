@@ -140,4 +140,23 @@ public class StudentDAO {
         }
     }
 
+    public int getTotalStudents() {
+         int total = 0;
+    String sql = "SELECT COUNT(*) AS total FROM students";
+    
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql);
+         ResultSet rs = pstmt.executeQuery()) {
+        
+        if (rs.next()) {
+            total = rs.getInt("total");
+        }
+        
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    
+    return total;
+    }
+
 }

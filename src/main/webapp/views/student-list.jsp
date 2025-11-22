@@ -148,78 +148,76 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📚 Student Management System</h1>
-        <p class="subtitle">MVC Pattern with Jakarta EE & JSTL</p>
-        
-        <!-- Success Message -->
-        <c:if test="${not empty param.message}">
-            <div class="message success">
-                ✅ ${param.message}
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <h2>📚 Student Management System</h2>
+        <div class="navbar-right">
+            <div class="user-info">
+                <span>Welcome, ${sessionScope.fullName}</span>
+                <span class="role-badge role-${sessionScope.role}">
+                    ${sessionScope.role}
+                </span>
             </div>
-        </c:if>
-        
-        <!-- Error Message -->
-        <c:if test="${not empty param.error}">
-            <div class="message error">
-                ❌ ${param.error}
-            </div>
-        </c:if>
-        
-        <!-- Add New Student Button -->
-        <div style="margin-bottom: 20px;">
-            <a href="student?action=new" class="btn btn-primary">
-                ➕ Add New Student
-            </a>
+            <a href="dashboard" class="btn-nav">Dashboard</a>
+            <a href="logout" class="btn-logout">Logout</a>
         </div>
+    </div>
+    
+    <div class="container">
+        <h1>📚 Student List</h1>
+        
+        <!-- Add button - Admin only -->
+        <c:if test="${sessionScope.role eq 'admin'}">
+            <div style="margin: 20px 0;">
+                <a href="student?action=new" class="btn-add">➕ Add New Student</a>
+            </div>
+        </c:if>
         
         <!-- Student Table -->
-        <c:choose>
-            <c:when test="${not empty students}">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Student Code</th>
-                            <th>Full Name</th>
-                            <th>Email</th>
-                            <th>Major</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="student" items="${students}">
-                            <tr>
-                                <td>${student.id}</td>
-                                <td><strong>${student.studentCode}</strong></td>
-                                <td>${student.fullName}</td>
-                                <td>${student.email}</td>
-                                <td>${student.major}</td>
-                                <td>
-                                    <div class="actions">
-                                        <a href="student?action=edit&id=${student.id}" class="btn btn-secondary">
-                                            ✏️ Edit
-                                        </a>
-                                        <a href="student?action=delete&id=${student.id}" 
-                                           class="btn btn-danger"
-                                           onclick="return confirm('Are you sure you want to delete this student?')">
-                                            🗑️ Delete
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-            </c:when>
-            <c:otherwise>
-                <div class="empty-state">
-                    <div class="empty-state-icon">📭</div>
-                    <h3>No students found</h3>
-                    <p>Start by adding a new student</p>
-                </div>
-            </c:otherwise>
-        </c:choose>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Major</th>
+                    <c:if test="${sessionScope.role eq 'admin'}">
+                        <th>Actions</th>
+                    </c:if>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach var="student" items="${students}">
+                    <tr>
+                        <td>${student.id}</td>
+                        <td>${student.studentCode}</td>
+                        <td>${student.fullName}</td>
+                        <td>${student.email}</td>
+                        <td>${student.major}</td>
+                        
+                        <!-- Action buttons - Admin only -->
+                        <c:if test="${sessionScope.role eq 'admin'}">
+                            <td>
+                                <a href="student?action=edit&id=${student.id}" 
+                                   class="btn-edit">Edit</a>
+                                <a href="student?action=delete&id=${student.id}" 
+                                   class="btn-delete"
+                                   onclick="return confirm('Delete this student?')">Delete</a>
+                            </td>
+                        </c:if>
+                    </tr>
+                </c:forEach>
+                
+                <c:if test="${empty students}">
+                    <tr>
+                        <td colspan="6" style="text-align: center;">
+                            No students found
+                        </td>
+                    </tr>
+                </c:if>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
